@@ -26,11 +26,11 @@ jobs:
         run: |
           unzip -q VR-Notes-Cloud-Build.zip -d build-src
 
-      - name: Fix Java and Kotlin targets
+      - name: Fix Java target
         run: |
           cd build-src/VR-Notes-Cloud-Build/VR-Notes
-          sed -i 's/VERSION_1_8/VERSION_17/g' app/build.gradle
-          sed -i "s/jvmTarget = ['\"]1.8['\"]/jvmTarget = '17'/g" app/build.gradle
+          sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle
+          sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' app/build.gradle
 
       - name: Build APK
         run: |
