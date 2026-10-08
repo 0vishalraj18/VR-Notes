@@ -26,33 +26,37 @@ jobs:
         run: |
           unzip -q VR-Notes-Cloud-Build.zip -d build-src
 
-      - name: Fix Java and Kotlin targets
+      - name: Fix app build file
         run: |
           cd build-src/VR-Notes-Cloud-Build/VR-Notes
-          python3 - <<'PY'
-          from pathlib import Path
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+              id 'org.jetbrains.kotlin.android'
+          }
 
-          p = Path("app/build.gradle")
-          s = p.read_text()
+          android {
+              namespace 'com.vrnotes.app'
+              compileSdk 35
 
-          s = s.replace(
-              'compileOptions {',
-              'compileOptions {\\n        sourceCompatibility JavaVersion.VERSION_17\\n        targetCompatibility JavaVersion.VERSION_17'
-          )
+              defaultConfig {
+                  applicationId 'com.vrnotes.app'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
 
-          s = s.replace(
-              'kotlinOptions {',
-              'kotlinOptions {\\n        jvmTarget = "17"'
-          )
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
 
-          s = s.replace(
-              'android {',
-              'android {\\n    compileOptions {\\n        sourceCompatibility JavaVersion.VERSION_17\\n        targetCompatibility JavaVersion.VERSION_17\\n    }',
-              1
-          )
-
-          p.write_text(s)
-          PY
+              kotlinOptions {
+                  jvmTarget = '17'
+              }
+          }
+          EOF
 
       - name: Build APK
         run: |
