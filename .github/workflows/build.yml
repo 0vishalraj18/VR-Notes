@@ -29,6 +29,7 @@ jobs:
       - name: Fix app build file
         run: |
           cd build-src/VR-Notes-Cloud-Build/VR-Notes
+
           cat > app/build.gradle <<'EOF'
           plugins {
               id 'com.android.application'
@@ -57,6 +58,24 @@ jobs:
               }
           }
           EOF
+
+      - name: Fix MainActivity AlertDialog
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("build-src/VR-Notes-Cloud-Build/VR-Notes/app/src/main/kotlin/com/vrnotes/app/MainActivity.kt")
+
+          s = p.read_text()
+
+          if "import android.app.AlertDialog" not in s:
+              s = s.replace(
+                  "package com.vrnotes.app\n",
+                  "package com.vrnotes.app\n\nimport android.app.AlertDialog\n",
+                  1
+              )
+              p.write_text(s)
+          PY
 
       - name: Build APK
         run: |
